@@ -21,30 +21,50 @@ DEFAULT_CONFIG_PATH = "/etc/raspifanctl/config.yaml"
 
 # Hardware-safe PWM frequency bounds (Hz).
 # Intel 4-pin spec recommends 25 kHz; allow a reasonable range.
-MIN_PWM_FREQUENCY = 1_000
+MIN_PWM_FREQUENCY = 15_000
 MAX_PWM_FREQUENCY = 50_000
 
 # Sane temperature bounds (°C) for validation.
 MIN_TEMP_THRESHOLD = 20
 MAX_TEMP_THRESHOLD = 100
 
+# Sane poll interval bounds (seconds). Temperature doesn't change that fast, so
+# a very low poll interval is not necessary. In the other hand, a very high poll
+# interval will make the fan less responsive to temperature changes.
+MIN_POLL_INTERVAL = 2
+MAX_POLL_INTERVAL = 60
+
+# Sane smoothing window bounds (number of readings). Higher reduces fan flutter but increases latency.
+MIN_SMOOTHING_WINDOW = 1
+MAX_SMOOTHING_WINDOW = 10
+
+# Temperature (°C) at which a warning is logged every poll cycle. Thermal
+# throttling of rasberry pi starts at 80°C.
+MIN_CRITICAL_TEMP = 70
+MAX_CRITICAL_TEMP = 82
+
+# Hysteresis bounds (°C). Larger hysteresis reduces fan flutter but increases
+# latency.
+MIN_HYSTERESIS = 1
+MAX_HYSTERESIS = 10
+
 
 @dataclass
 class Config:
     """Runtime configuration for the fan controller."""
 
-    poll_interval: int = 60
+    poll_interval: int = 10
     hysteresis: int = 3
     pwm_frequency: int = 25_000
     gpio_pin: int = 18
     smoothing_window: int = 5
     log_level: str = "INFO"
-    critical_temp: int = 80
+    critical_temp: int = 78
 
     # Default fan curve: list of (temperature °C, fan speed %).
     # Below the lowest threshold the fan is off.
     curve: List[Tuple[int, int]] = field(default_factory=lambda: [
-        (45, 0),
+        (45, 10),
         (55, 30),
         (63, 50),
         (70, 75),
@@ -89,18 +109,21 @@ def _validate(cfg: Config) -> Config:
     if cfg.poll_interval < 1:
         raise ValueError(f"poll_interval must be ≥ 1, got {cfg.poll_interval}")
 
-    if cfg.hysteresis < 0:
-        raise ValueError(f"hysteresis must be ≥ 0, got {cfg.hysteresis}")
+    if not MIN_HYSTERESIS <= cfg.hysteresis <= MAX_HYSTERESIS:
+        raise ValueError(f"hysteresis {cfg.hysteresis}°C outside safe range "
+                         f"({MIN_HYSTERESIS}–{MAX_HYSTERESIS})")
 
     if not MIN_PWM_FREQUENCY <= cfg.pwm_frequency <= MAX_PWM_FREQUENCY:
         raise ValueError(f"pwm_frequency {cfg.pwm_frequency} Hz outside safe range "
                          f"({MIN_PWM_FREQUENCY}–{MAX_PWM_FREQUENCY})")
 
-    if cfg.smoothing_window < 1:
-        raise ValueError(f"smoothing_window must be ≥ 1, got {cfg.smoothing_window}")
+    if not MIN_SMOOTHING_WINDOW <= cfg.smoothing_window <= MAX_SMOOTHING_WINDOW:
+        raise ValueError(f"smoothing_window {cfg.smoothing_window} outside safe range "
+                         f"({MIN_SMOOTHING_WINDOW}–{MAX_SMOOTHING_WINDOW})")
 
-    if cfg.critical_temp < 50:
-        raise ValueError(f"critical_temp must be ≥ 50, got {cfg.critical_temp}")
+    if not MIN_CRITICAL_TEMP <= cfg.critical_temp <= MAX_CRITICAL_TEMP:
+        raise ValueError(f"critical_temp {cfg.critical_temp}°C outside safe range "
+                         f"({MIN_CRITICAL_TEMP}–{MAX_CRITICAL_TEMP})")
 
     cfg.curve = _validate_curve(cfg.curve)
     cfg.log_level = cfg.log_level.upper()
