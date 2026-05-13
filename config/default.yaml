@@ -1,0 +1,36 @@
+# raspi-fan-control — default configuration
+#
+# Copy this file to /etc/raspifanctl/config.yaml and adjust as needed.
+# Any value omitted from the config file falls back to the built-in default.
+
+# How often to read the CPU temperature and evaluate the fan curve (seconds).
+poll_interval: 60
+
+# Hysteresis margin (°C). The temperature must drop this far below a
+# threshold before the fan speed decreases, preventing rapid oscillation.
+hysteresis: 3
+
+# Hardware PWM frequency (Hz). 25 kHz is the 4-pin fan standard.
+pwm_frequency: 25000
+
+# GPIO pin used for PWM output (BCM numbering).
+gpio_pin: 18
+
+# Number of recent temperature readings to average for smoothing.
+smoothing_window: 5
+
+# Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL.
+log_level: INFO
+
+# Temperature (°C) at which a warning is logged every poll cycle.
+critical_temp: 80
+
+# Fan speed curve: list of [temperature_°C, fan_speed_%] breakpoints.
+# Below the lowest threshold the fan is off.
+# Temperatures must be strictly ascending.
+curve:
+  - [45, 0]
+  - [55, 30]
+  - [63, 50]
+  - [70, 75]
+  - [75, 100]

@@ -1,0 +1,26 @@
+[Unit]
+Description=Raspberry Pi PWM Fan Controller
+Documentation=https://github.com/carlos/raspi-fan-control
+After=pigpiod.service
+Requires=pigpiod.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m src.main
+WorkingDirectory=/opt/raspifanctl
+Restart=always
+RestartSec=5
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/sys/class/thermal
+ReadWritePaths=/dev
+
+# Logging to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=raspifanctl
+
+[Install]
+WantedBy=multi-user.target
