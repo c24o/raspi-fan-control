@@ -22,7 +22,7 @@ MAX_SANE_TEMP = 120.0
 class TemperatureReader:
     """Reads CPU temperature and provides smoothed values."""
 
-    def __init__(self, smoothing_window: int = 5) -> None:
+    def __init__(self, smoothing_window: int) -> None:
         self._window: deque[float] = deque(maxlen=max(1, smoothing_window))
 
     def read_raw(self) -> float:

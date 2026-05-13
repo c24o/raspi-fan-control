@@ -58,7 +58,7 @@ class FanController:
                 try:
                     self._pwm.set_speed(100)
                 except Exception:
-                    logger.exception("Failed to set fail-safe fan speed")
+                    logger.exception("Failed to set fail-safe fan speed to 100%%")
 
             # Use a short-step sleep so we can respond to stop() promptly
             # while still respecting the configured poll interval.

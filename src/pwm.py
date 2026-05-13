@@ -20,7 +20,7 @@ _PIGPIO_RANGE = 1_000_000
 class PWMController:
     """Controls a 4-pin PWM fan via hardware PWM on a Raspberry Pi."""
 
-    def __init__(self, gpio_pin: int = 18, frequency: int = 25_000) -> None:
+    def __init__(self, gpio_pin: int, frequency: int) -> None:
         self._pin = gpio_pin
         self._frequency = frequency
         self._pi: pigpio.pi | None = None

@@ -30,7 +30,7 @@ class FanCurve:
     def __init__(
         self,
         curve: List[Tuple[int, int]],
-        hysteresis: int = 3,
+        hysteresis: int,
     ) -> None:
         # Curve must be sorted by temperature (enforced by config validation).
         self._curve = sorted(curve, key=lambda x: x[0])
