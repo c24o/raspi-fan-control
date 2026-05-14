@@ -177,6 +177,34 @@ journalctl -u raspifanctl --since today  # Today's logs
 journalctl -u raspifanctl -n 50       # Last 50 lines
 ```
 
+## Development and Testing
+
+### Running Tests
+
+The project includes a comprehensive suite of unit tests using `pytest`.
+
+To run all tests:
+```bash
+python3 -m pytest tests/ -v
+```
+
+To run a specific test file:
+```bash
+python3 -m pytest tests/test_config.py -v
+```
+
+To run a specific test case:
+```bash
+python3 -m pytest tests/test_config.py::TestConfigDefaults::test_defaults_are_valid -v
+```
+
+### Dependencies for Testing
+
+You will need `pytest` and `PyYAML` installed to run the tests:
+```bash
+pip install pytest pyyaml
+```
+
 ## Safety Notes
 
 ### Fail-Safe Behavior
