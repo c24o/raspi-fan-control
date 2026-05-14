@@ -29,7 +29,6 @@ critical_temp: 80
 # Below the lowest threshold the fan is off.
 # Temperatures must be strictly ascending.
 curve:
-  - [45, 0]
   - [55, 30]
   - [63, 50]
   - [70, 75]

@@ -106,8 +106,9 @@ def _validate_curve(curve: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
 
 def _validate(cfg: Config) -> Config:
     """Validate the full configuration, raising on fatal problems."""
-    if cfg.poll_interval < 1:
-        raise ValueError(f"poll_interval must be ≥ 1, got {cfg.poll_interval}")
+    if not MIN_POLL_INTERVAL <= cfg.poll_interval <= MAX_POLL_INTERVAL:
+        raise ValueError(f"poll_interval {cfg.poll_interval}s outside safe range "
+                         f"({MIN_POLL_INTERVAL}–{MAX_POLL_INTERVAL})")
 
     if not MIN_HYSTERESIS <= cfg.hysteresis <= MAX_HYSTERESIS:
         raise ValueError(f"hysteresis {cfg.hysteresis}°C outside safe range "

@@ -1,6 +1,6 @@
 [Unit]
 Description=Raspberry Pi PWM Fan Controller
-Documentation=https://github.com/carlos/raspi-fan-control
+Documentation=https://github.com/c24o/raspi-fan-control
 After=pigpiod.service
 Requires=pigpiod.service
 
